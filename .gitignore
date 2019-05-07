@@ -10,6 +10,11 @@
 *.userosscache
 *.sln.docstates
 
+# Usually you want to keep these, but for my purposes they aren't needed
+*.vcxproj
+*.vcxproj.filters
+*.sln
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
