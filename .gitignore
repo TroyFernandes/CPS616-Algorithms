@@ -15,6 +15,9 @@
 *.vcxproj.filters
 *.sln
 
+# Ignore Output Files
+*Lab[1-9]_TroyFernandes.txt
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
