@@ -7,7 +7,7 @@
 #include <tuple>
 #include <iomanip>
 #include <fstream>
-#include "main.h"
+#include "lab1.h"
 
 enum SortingAlgo { MERGE = 1, SELECTION = 2, MERGSEL = 3 };
 
@@ -28,7 +28,8 @@ int arr4[arr4_size] = {};
 int arr5[arr5_size] = {};
 
 //Minimum size of the sub array before being sent to selection sort
-std::vector<int> xVals = { 1,2,5,10,20,50,64,128,256,512,1024,2048,4096 };
+//Add values to this vector if you want to test different subarray sizes
+std::vector<int> xVals = { 1,2,5,10,20,50,64,128,250,500,1000,2500,5000 };
 
 int main()
 {
@@ -43,6 +44,7 @@ int main()
 
 	//Empty and refill array
 	reinitializeArray();
+
 
 
 	//Run selection sort on the 5 arrays
@@ -89,6 +91,10 @@ int main()
 	return 0;
 }
 
+/*
+Selection sort taken from https://en.wikipedia.org/wiki/Selection_sort
+*/
+
 //Standard Selection Sort
 void selectionSort(int arr[], size_t arr_size, int startIndex) {
 
@@ -113,163 +119,136 @@ void selectionSort(int arr[], size_t arr_size, int startIndex) {
 
 }
 
+/*
+The base implementation for the mergeSortRegular and merge functions are taken
+from https://www.geeksforgeeks.org/merge-sort/
+*/
+
 //Merge two sub arrays
-void merge(int arr[], int l, int m, int r)
+void merge(int arr[], int leftIndex, int middleIndex, int rightIndex)
 {
 	int i, j, k;
-	int n1 = m - l + 1;
-	int n2 = r - m;
+	int leftArrSize = middleIndex - leftIndex + 1;
+	int rightArrSize = rightIndex - middleIndex;
 
 	/* create temp arrays */
-	int *L = new int[n1];
-	int *R = new int[n2];
+	int *tempArrL = new int[leftArrSize];
+	int *tempArrR = new int[rightArrSize];
 
 
-	/* Copy data to temp arrays L[] and R[] */
-	for (i = 0; i < n1; i++)
-		L[i] = arr[l + i];
-	for (j = 0; j < n2; j++)
-		R[j] = arr[m + 1 + j];
+	/* Copy data to temp arrays tempArrL[] and tempArrR[] */
+	for (i = 0; i < leftArrSize; i++)
+		tempArrL[i] = arr[leftIndex + i];
+	for (j = 0; j < rightArrSize; j++)
+		tempArrR[j] = arr[middleIndex + 1 + j];
 
 	/* Merge the temp arrays back into arr[l..r]*/
 	i = 0; // Initial index of first subarray 
 	j = 0; // Initial index of second subarray 
-	k = l; // Initial index of merged subarray 
-	while (i < n1 && j < n2)
+	k = leftIndex; // Initial index of merged subarray 
+	while (i < leftArrSize && j < rightArrSize)
 	{
-		if (L[i] <= R[j])
+		if (tempArrL[i] <= tempArrR[j])
 		{
-			arr[k] = L[i];
+			arr[k] = tempArrL[i];
 			i++;
 		}
 		else
 		{
-			arr[k] = R[j];
+			arr[k] = tempArrR[j];
 			j++;
 		}
 		k++;
 	}
 
-	/* Copy the remaining elements of L[], if there
+	/* Copy the remaining elements of tempArrL[], if there
 	   are any */
-	while (i < n1)
+	while (i < leftArrSize)
 	{
-		arr[k] = L[i];
+		arr[k] = tempArrL[i];
 		i++;
 		k++;
 	}
 
-	/* Copy the remaining elements of R[], if there
+	/* Copy the remaining elements of tempArrR[], if there
 	   are any */
-	while (j < n2)
+	while (j < rightArrSize)
 	{
-		arr[k] = R[j];
+		arr[k] = tempArrR[j];
 		j++;
 		k++;
 	}
-	delete[] L;
-	delete[] R;
+	delete[] tempArrL;
+	delete[] tempArrR;
 
 }
 
 //Standard Merge Sort
-void mergeSortRegular(int arr[], int l, int r, int subArraySize)
+void mergeSortRegular(int arr[], int leftIndex, int rightIndex)
 {
-	if (l < r)
+
+	if (leftIndex < rightIndex)
 	{
-		// Same as (l+r)/2, but avoids overflow for 
-		// large l and h 
-		int m = l + (r - l) / 2;
+		//Calculate middle index
+		int middleIndex = leftIndex + (rightIndex - leftIndex) / 2;
 
-		// Sort first and second halves 
-		mergeSortRegular(arr, l, m);
-		mergeSortRegular(arr, m + 1, r);
+		// Sort first and second halves using the standard Merge Sort
+		mergeSortRegular(arr, leftIndex, middleIndex);
+		mergeSortRegular(arr, middleIndex + 1, rightIndex);
 
-		merge(arr, l, m, r);
+		//Merge the arrays
+		merge(arr, leftIndex, middleIndex, rightIndex);
 	}
 }
 
-//Modified Merge sort which send the subarrays to selection sort when the size becomes small enough
-void mergeSelSort(int arr[], int l, int r, int subArraySize)
+//Modified Merge sort which sends the subarrays to selection sort when the size becomes small enough
+void mergeSelSort(int arr[], int leftIndex, int rightIndex, int subArraySize)
 {
-	// Same as (l+r)/2, but avoids overflow for large l and h 
-	int m = l + (r - l) / 2;
 
-	if (l < r) {
+	int middleIndex = leftIndex + (rightIndex - leftIndex) / 2;
 
-		//printf("\nl = %d, r = %d, m = %d", l, r, m);
-		//printf(" \nParent Array (length = %d) ", r - l + 1);
-		//printArray(arr, r + 1, l);
-		//printf(" Left Child: ");
-		//printArray(arr, m + 1, l);
-		//printf(" Right array is: ");
-		//printArray(arr, r + 1, m + 1);
-		//printf("\n");
+	if (leftIndex < rightIndex) {
 
-
-		if (r - l + 1 <= subArraySize) {
-			sortAndMerge(arr, l, r);
-			merge(arr, l, m, r);
+		/*
+		subArraySize is the minimum sub array size before the array gets sorted.
+		Normally Merge sort would continue to recurse until the sub array size equals 1.
+		The default value for subArraySize = 64
+		*/
+		if (rightIndex - leftIndex + 1 <= subArraySize) {
+			sortAndMerge(arr, leftIndex, rightIndex);
 			return;
 		}
 
-		mergeSortRegular(arr, l, m);
-		mergeSortRegular(arr, m + 1, r);
+		mergeSelSort(arr, leftIndex, middleIndex, subArraySize);
+		mergeSelSort(arr, middleIndex + 1, rightIndex, subArraySize);
 
-
-
-		merge(arr, l, m, r);
+		merge(arr, leftIndex, middleIndex, rightIndex);
 
 	}
 
 }
 
 //Helper function for the mergeSelSort function
-void sortAndMerge(int arr[], int l, int r) {
+void sortAndMerge(int arr[], int leftIndex, int rightIndex) {
 
-	int m = l + (r - l) / 2;
+	int middleIndex = leftIndex + (rightIndex - leftIndex) / 2;
 
+	selectionSort(arr, middleIndex + 1, leftIndex);
+	selectionSort(arr, rightIndex + 1, middleIndex + 1);
 
-	//printf("Left index: %d \n", l);
-	//printf("Middle index: %d \n", m);
-	//printf("Right index: %d \n", r);
-	//printf("Next Middle index: %d \n", 0 + (m - 0) / 2);
-
-
-	//printf("\nl = %d, r = %d, m = %d", l, r, m);
-	//printf(" Left array is: ");
-	//printArray(arr, m + 1, l);
-	//printf(" Right array is: ");
-	//printArray(arr, r + 1, m + 1);
-
-	selectionSort(arr, m + 1, l);
-	selectionSort(arr, r + 1, m + 1);
-
-	//printf("\nSorted left array is \n");
-	//printArray(arr, m + 1, l);
-	//printf("\nSorted right array is \n");
-	//printArray(arr, r + 1, m + 1);
-
-	merge(arr, l, m, r);
-	//printf(" Merged Array (length = %d): ", r - l + 1);
-
-	//printArrayRanged(arr, l, r);
-
-
-	//printf("\n\n");
+	merge(arr, leftIndex, middleIndex, rightIndex);
 
 }
 
-//Fill the array with random numbers ranging from the max size of the array times 4 (i.e 50 element array -> max number that can be in the array = 200)
+//Fill the array with random numbers ranging from the max size of the array times 4 (i.e 50 element array -> max value that can be in the array = 200)
 void generateArray(int arr[], size_t n_elements) {
 	const int range_from = 1;
-	const int range_to = 4 * (int)n_elements;
+	const size_t range_to = 4 * n_elements;
 	std::random_device                  rand_dev;
 	std::mt19937                        generator(rand_dev());
 	std::uniform_int_distribution<int>  distr(range_from, range_to);
 
-	for (int i = 0; i < n_elements; ++i) {
-		//std::cout << distr(generator) << ' ';
+	for (size_t i = 0; i < n_elements; ++i) {
 		arr[i] = distr(generator);
 	}
 }
@@ -320,9 +299,6 @@ void runFunction(int function, int arr[], size_t arr_size, std::vector<Results>&
 			reinitializeArray();
 		}
 
-		//std::cout << "\nSelection Sort: Finished sorting n= " << arr_size << " in: " << millisecondsSelSort << " milliseconds";
-		//printf("\nSelection Sort: Finished sorting n= %d in: %Lf ms", (int)arr_size, millisecondsSelSort);
-
 		std::string temp = std::to_string(timeTotal / 10) + "ms";
 		results[0].results.push_back(temp);
 		return;
@@ -341,7 +317,6 @@ void runFunction(int function, int arr[], size_t arr_size, std::vector<Results>&
 			reinitializeArray();
 
 		}
-		//std::cout << "\nMerge Sort: Finished sorting n= " << arr_size << " in: " << millisecondsMergSort << "ms";
 		std::string temp = std::to_string(timeTotal / 10) + "ms";
 
 		results[1].results.push_back(temp);
@@ -358,18 +333,15 @@ void runFunction(int function, int arr[], size_t arr_size, std::vector<Results>&
 			auto elapsedMergSelTimer = std::chrono::high_resolution_clock::now() - startMergSelTimer;
 			double millisecondsMergSelSort = std::chrono::duration<double, std::milli>(elapsedMergSelTimer).count();
 			timeTotal += millisecondsMergSelSort;
+
 			reinitializeArray();
 		}
-		//std::cout << index << "   " << results.size() << "\n";
 
 		results[index].algoName = "MergeSel";
 		results[index].xValue = subArraySize;
 		std::string temp = std::to_string(timeTotal / 10) + "ms";
 
 		results[index].results.push_back(temp);
-
-		//std::cout << "\nMerge + Selection Sort: Finished sorting n= " << arr_size << " in: " << millisecondsMergSelSort << "ms";
-
 
 		return;
 	}
