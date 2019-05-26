@@ -82,12 +82,15 @@ int main()
 
 
 	//std::string result = mult3a_String("1234145671", "4567112341");
-	std::string result = mult3a_String("321321654987", "123456789123");
+	//std::string result = mult3a_String("123123123", "123123123");
+	std::string result = mult3a_String("123123123", "123123123");
 	std::cout << std::endl << result;
 	//std::cout << std::endl << x * y << std::endl;
 
 	//std::vector<std::string> toSub = { {"99"} };
-	//std::string res = longSubtraction("9999", toSub);
+
+	//std::vector<std::string> toAdd = { {"15"},{"04"} };
+	//std::string res = longAddition(toAdd);
 	//std::cout << res << std::endl;
 
 	//Wait for keypress before exiting
@@ -192,6 +195,9 @@ void mult4(std::string num1, std::string num2) {
 std::string longAddition(std::vector<std::string> &operands) {
 	std::string summation;
 
+	if (operands[0] == "15" && operands[1] == "04") {
+		;
+	}
 
 	int i, j, sum2 = 0;
 	int carry = 0;
@@ -367,6 +373,16 @@ std::string mult3a_String(std::string x, std::string y)
 	std::string c = std::to_string(std::stoi(y) / (long long int)pow(10, half_of_digits));
 	std::string d = std::to_string(std::stoi(y) % (long long int)pow(10, half_of_digits));
 
+
+
+	//std::string a = x.substr(0, half_of_digits);
+	//std::string b = x.substr(half_of_digits, x.length());
+
+	//std::string c = y.substr(0, half_of_digits);
+	//std::string d = y.substr(half_of_digits, y.length());
+
+
+
 	int abMax = std::max(a.length(), b.length());
 	int dcMax = std::max(d.length(), c.length());
 
@@ -384,6 +400,7 @@ std::string mult3a_String(std::string x, std::string y)
 
 	std::string z0 = mult3a_String(charToString(b), charToString(d));
 	std::string z1 = mult3a_String(charToString(longAddition(aPlusB)), charToString(longAddition(dPlusC)));
+
 	std::string z2 = mult3a_String(charToString(a), charToString(c));
 
 	std::vector<std::string> subtrahend = { {z2},{z0} };
@@ -403,8 +420,8 @@ std::string mult3a_String(std::string x, std::string y)
 	int zRightPadMax = std::max(std::max(z0PaddedRight.length(), z1PaddedRight.length()), std::max(z2PaddedRight.length(), s4PaddedRight.length()));
 
 
-	std::string z0Padded = std::string(zRightPadMax - z0PaddedRight.length(), '0') + (z0PaddedRight);
-	std::string z2Padded = z2PaddedRight; // stays the same 
+	std::string z0Padded = std::string(zRightPadMax - z0PaddedRight.length(), '0') + z0PaddedRight;
+	std::string z2Padded = std::string(zRightPadMax - z2PaddedRight.length(), '0') + z2PaddedRight;
 	std::string s4Padded = std::string(zRightPadMax - s4PaddedRight.length(), '0') + s4PaddedRight;
 
 
@@ -415,7 +432,7 @@ std::string mult3a_String(std::string x, std::string y)
 
 	//std::cout << "Vector : " << vecRes << std::endl;
 
-	std::cout << "z0 = " << z0Padded << std::endl << "z1 = " << s4Padded << std::endl << "z2 = " << z2Padded << " =  " << "testing" << std::endl << std::endl;
+	std::cout << "z0 = " << z0Padded << std::endl << "s4 = " << s4Padded << std::endl << "z2 = " << z2Padded << std::endl << std::endl;
 
 
 	return vecRes;
@@ -483,10 +500,21 @@ std::string longSubtraction(std::string minuend, std::vector<std::string> subtra
 		if (temp == "0") {
 			continue;
 		}
-		size_t padding = minuend.length() - temp.length();
-		if (padding < 0 || padding == 18446744073709551615) {
+		size_t padding;
+
+		//if (padding < 0 || padding == 18446744073709551615) {
+		//	padding = 0;
+		//}
+
+
+		if (temp.length() > minuend.length()) {
 			padding = 0;
 		}
+		else {
+			padding = minuend.length() - temp.length();
+		}
+
+
 		std::string ninePadding = std::string(padding, '9');
 		temp = ninePadding + temp;
 		//std::cout << temp << std::endl;
