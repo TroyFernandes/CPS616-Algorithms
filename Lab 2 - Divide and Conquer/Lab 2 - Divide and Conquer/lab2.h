@@ -11,3 +11,4 @@ std::string charToString(char charachter);
 std::string charToString(std::string charachter);
 std::string findComplement(std::string number);
 std::string longSubtraction(std::string minuend, std::vector<std::string> subtrahend);
+void padString(std::string &s1, std::string &s2);

@@ -64,39 +64,20 @@ void printVector(std::vector<std::string> vec) {
 int main()
 {
 	std::cout << "CCPS616 - Lab 2 - Troy Fernandes" << std::endl;
+	std::string x = "12345";
+	std::string y = "56785";
+	mult4(x, y);
+	std::cout << std::endl << std::endl;
 
-
-	//mult4("46339", "46339");
-	//mult4("234", "222");
-
-	//mult4("3563474256143563", "897655845");
-
-	//int result = mult3a("3563474256143563", "8976558458718976");
-	//long long int x = 321321321321321321;
-	//long long int y = 321321321321321321;
-
-	//std::string xString = std::to_string(x);
-	//std::string yString = std::to_string(y);
-
-	//long long int result = mult3a_String(x, y);
-
-
-	//std::string result = mult3a_String("1234145671", "4567112341");
-	//std::string result = mult3a_String("123123123", "123123123");
-	std::string result = mult3a_String("123123123", "123123123");
+	std::string result = mult3a_String(x, y);
 	std::cout << std::endl << result;
-	//std::cout << std::endl << x * y << std::endl;
 
-	//std::vector<std::string> toSub = { {"99"} };
-
-	//std::vector<std::string> toAdd = { {"15"},{"04"} };
-	//std::string res = longAddition(toAdd);
-	//std::cout << res << std::endl;
 
 	//Wait for keypress before exiting
 	std::cin.ignore();
 
 	return 0;
+
 }
 
 //TODO: instead of going through each indivdual element in the vector, maybe step larger and index directly?
@@ -220,141 +201,11 @@ std::string longAddition(std::vector<std::string> &operands) {
 }
 
 
-
-long long int mult3a_OLD(std::string num1, std::string num2) {
-	std::cout << std::endl;
-	// num < 10 == num.length < 2
-	if (num1.length() < 2 || num2.length() < 2) {
-		//return num1 * num2;
-		//std::cout << num1 << " * " << num2 << " = " << (std::stoi(num1) * std::stoi(num2)) << std::endl;
-		return (std::stoi(num1) * std::stoi(num2));
-	}
-
-	int numLength = std::min((num1).length(), (num2).length());
-	int midpoint = std::floor(float(numLength) / 2);
-
-
-	std::string x_H = (num1.substr(0, midpoint));
-	std::string x_L = (num1.substr(midpoint, num1.length()));
-
-	std::string y_H = (num2.substr(0, midpoint));
-	std::string y_L = (num2.substr(midpoint, num2.length()));
-
-
-	std::string x = x_H + std::string(midpoint, '0') + " + " + x_L;
-	std::string y = y_H + std::string(midpoint, '0') + " + " + y_L;
-
-	long long int a = std::stoi(x_H);
-	long long int b = std::stoi(x_L);
-	long long int c = std::stoi(y_H);
-	long long int d = std::stoi(y_L);
-
-	std::cout << "a = " << a << " , b = " << b << std::endl;
-	std::cout << "c = " << c << " , d = " << d << std::endl;
-	std::cout << "ac = " << a * c << std::endl;
-	std::cout << "bd = " << b * d << std::endl;
-	std::cout << "(a+b)(c+d) = " << (a + b)*(c + d) << std::endl;
-	std::cout << "3 - 2 - 1  = " << (a + b)*(c + d) - (b * d) - (a*c) << std::endl;
-
-	std::cout << a * c << std::string(midpoint * 2, '0') << std::endl;
-	std::cout << b * d << std::endl;
-	std::cout << (a + b)*(c + d) - (b * d) - (a*c) << std::string(midpoint, '0') << std::endl;
-
-	std::string acString = std::to_string(a * c) + std::string(midpoint * 2, '0');
-	std::string bdString = std::to_string(b * d);
-	std::string resString = std::to_string((a + b)*(c + d) - (b * d) - (a*c)) + std::string(midpoint, '0');
-
-
-	std::vector<std::string> dothis = {
-		{acString},
-		{std::string(acString.length() - bdString.length(),'0') + bdString},
-		{std::string(acString.length() - resString.length(),'0') + resString}
-	};
-
-	std::string result = longAddition(dothis);
-
-	std::cout << result;
-	return 1;
-}
-
-long long int mult3a(long long int x, long long int y)
-{
-	long long int a, b, c, d;								//  These local variables are used to parse the integers passed as parameters
-										//  to this function into 4 almost equal parts later in this function. 
-	if ((x < 10) && (y < 10))						//  If the integer is less than 10 or has only a unit position then both are simply multiplied .
-		return x * y;
-
-	long long int max_num_of_digits = std::max(std::to_string(x).length(), std::to_string(y).length());	//  This uilizes the size_base10 and max functions created above to calculate the number of digits
-	long long int half_of_digits = std::ceil(max_num_of_digits / 2);							//  in the larger integer.
-
-
-	//long long int a = std::stoi(std::to_string(x).substr(0, half_of_digits));
-	//long long int b = std::stoi(std::to_string(x).substr(half_of_digits, std::to_string(x).length()));
-
-	//long long int c = std::stoi(std::to_string(y).substr(0, half_of_digits));
-	//long long int d = std::stoi(std::to_string(y).substr(half_of_digits, std::to_string(y).length()));
-
-
-	//if (max_num_of_digits % 2 == 0)
-	//	half_of_digits = max_num_of_digits / 2;				//  This if statement makes sure that if the number of digits in the larger integer is odd then the
-	//else													//  half of the max number of digits will be rounded up. (The built in round up function can also be
-	//	half_of_digits = (max_num_of_digits / 2) + 1;			//  used here)
-
-	a = x / (long long int)pow(10, half_of_digits);							//  Local Variables are parsed into 4 almost equal parts. For example, if the two integers are 1234 
-	b = x % (long long int)pow(10, half_of_digits);							//  and 567 then they will be parsed as: a = 12, b = 34, c = 05, d = 67.
-	c = y / (long long int)pow(10, half_of_digits);							//  Note: If the size of integer is not equal, the smaller integer is padded with zeros.
-	d = y % (long long int)pow(10, half_of_digits);
-
-	// The function recursively called in these statement according to the 
-	long long int z0 = mult3a(b, d);									// divide and conquer technique until the breaking condition is returned  
-	long long int z1 = mult3a((a + b), (c + d));
-	long long int z2 = mult3a(a, c);// i.e. if an integer is less than 10.
-	long long int step4 = z1 - z2 - z0;								// This step has reduced the recursive call by 1 and thus reducing the 
-	//long long int step5 = (step1 * pow(10, 2 * half_of_digits)) + step2 + (step4 * pow(10, half_of_digits));	// time complexity from O(n^2) to O(n^log3).
-
-
-	int res1 = z1 + z2 + z0;
-
-	long long int testing = (z2 * pow(10, half_of_digits * 2)) + ((z1 - z2 - z0) * pow(10, half_of_digits)) + z0;
-
-	std::string z0PaddedRight = std::to_string(z0);
-	std::string z1PaddedRight = std::to_string(z1) + std::string(half_of_digits, '0');
-	std::string z2PaddedRight = std::to_string(z2) + std::string(half_of_digits * 2, '0');
-	std::string s4String = (std::to_string(step4) + std::string(half_of_digits, '0'));
-
-
-	std::string z0Padded = std::string(z2PaddedRight.length() - z0PaddedRight.length(), '0') + (z0PaddedRight);
-	std::string z2Padded = (z2PaddedRight); // stays the same 
-	std::string s4Padded = std::string(z2PaddedRight.length() - s4String.length(), '0') + s4String;
-
-
-
-	//std::vector<std::string> dothis = {
-	//{acString},
-	//{std::string(acString.length() - bdString.length(),'0') + bdString},
-	//{std::string(acString.length() - resString.length(),'0') + resString}
-	//};
-	std::string leftTerm = std::to_string((z2 * pow(10, half_of_digits * 2)));
-	std::string middleTerm;
-	std::string rightTerm;
-	std::cout << "z0 = " << z0Padded << std::endl << "s4 = " << s4Padded << std::endl << "z2 = " << z2Padded << std::endl << std::endl;
-	//std::cout << "z0 = " << z0Padded << std::endl << "z1 = " << z1PaddedRight << std::endl << "z2 = " << z2Padded << " =  " << res1 << std::endl << std::endl;
-
-
-	//std::cout << "Step 4: " << step4 << std::endl << std::endl;
-	//std::cout << "Result: " << testing << std::endl << std::endl;
-	//std::cout << "Result: " << std::to_string((int)(z2 * pow(10, half_of_digits * 2))) << " + " << (int)((z1 - z2 - z0) * pow(10, half_of_digits)) << " + " << (int)z0 << " = " << testing << std::endl << std::endl;
-	std::cout << "\t  z1 = " << z1 << ", z2 = " << z2 << ", z0 = " << z0 << std::endl;
-	std::cout << "Result: " << std::to_string((int)(z2 * pow(10, half_of_digits * 2))) << " + " << "(" << z1 << " - " << z2 << " - " << z0 << ") * " << pow(10, half_of_digits) << " + " << (int)z0 << " = " << testing << std::endl << std::endl;
-
-
-	return testing;
-}
-
-
 std::string mult3a_String(std::string x, std::string y)
 {
-
+	if (x.empty() || y.empty()) {
+		return "0";
+	}
 
 	if ((x.length() < 2) && (y.length() < 2)) {
 		return std::to_string(std::stoi(x) * std::stoi(y));
@@ -364,23 +215,10 @@ std::string mult3a_String(std::string x, std::string y)
 	long long int half_of_digits = std::ceil(max_num_of_digits / 2);
 
 
-
-
-
-
 	std::string a = std::to_string(std::stoi(x) / (long long int)pow(10, half_of_digits));
 	std::string b = std::to_string(std::stoi(x) % (long long int)pow(10, half_of_digits));
 	std::string c = std::to_string(std::stoi(y) / (long long int)pow(10, half_of_digits));
 	std::string d = std::to_string(std::stoi(y) % (long long int)pow(10, half_of_digits));
-
-
-
-	//std::string a = x.substr(0, half_of_digits);
-	//std::string b = x.substr(half_of_digits, x.length());
-
-	//std::string c = y.substr(0, half_of_digits);
-	//std::string d = y.substr(half_of_digits, y.length());
-
 
 
 	int abMax = std::max(a.length(), b.length());
@@ -405,7 +243,6 @@ std::string mult3a_String(std::string x, std::string y)
 
 	std::vector<std::string> subtrahend = { {z2},{z0} };
 
-	//long long int step4 = std::stoll(z1) - std::stoll(z2) - std::stoll(z0);
 	std::string step4 = longSubtraction(z1, subtrahend);
 
 
@@ -430,9 +267,8 @@ std::string mult3a_String(std::string x, std::string y)
 
 	std::string vecRes = longAddition(toAdd);
 
-	//std::cout << "Vector : " << vecRes << std::endl;
 
-	std::cout << "z0 = " << z0Padded << std::endl << "s4 = " << s4Padded << std::endl << "z2 = " << z2Padded << std::endl << std::endl;
+	//std::cout << "z0 = " << z0Padded << std::endl << "s4 = " << s4Padded << std::endl << "z2 = " << z2Padded << std::endl << std::endl;
 
 
 	return vecRes;
@@ -530,77 +366,8 @@ std::string longSubtraction(std::string minuend, std::vector<std::string> subtra
 
 }
 
-std::string mult3a_String2(std::string x, std::string y) {
-
-
-	if ((x.length() < 2) && (y.length() < 2)) {
-		return std::to_string(std::stoi(x) * std::stoi(y));
-	}
-
-	long long int max_num_of_digits = std::max(x.length(), y.length());
-	long long int half_of_digits = std::ceil(max_num_of_digits / 2);
-
-	std::string a = std::to_string(std::stoi(x) / (long long int)pow(10, half_of_digits)); //high 1
-	std::string b = std::to_string(std::stoi(x) % (long long int)pow(10, half_of_digits));// low1
-	std::string c = std::to_string(std::stoi(y) / (long long int)pow(10, half_of_digits));//high2
-	std::string d = std::to_string(std::stoi(y) % (long long int)pow(10, half_of_digits));//low2
-
-	int abMax = std::max(a.length(), b.length());
-	int dcMax = std::max(d.length(), c.length());
-
-
-	std::vector<std::string> aPlusB = {
-		{std::string(abMax - a.length(),'0') + a},
-		{std::string(abMax - b.length(),'0') + b}
-	};
-
-	std::vector<std::string> dPlusC = {
-	{std::string(dcMax - d.length(),'0') + d},
-	{std::string(dcMax - c.length(),'0') + c}
-	};
-
-	a = std::string(abMax - a.length(), '0') + a;
-	b = std::string(abMax - b.length(), '0') + b;
-	c = std::string(abMax - c.length(), '0') + c;
-	d = std::string(abMax - d.length(), '0') + d;
-
-
-
-	std::cout << a << std::endl;
-	std::cout << b << std::endl;
-	std::cout << c << std::endl;
-	std::cout << d << std::endl;
-
-	std::string z0 = mult3a_String2(charToString(b), charToString(d));
-	std::string z1 = mult3a_String2(charToString(longAddition(aPlusB)), charToString(longAddition(dPlusC))) + std::string(half_of_digits, '0');
-	std::string z2 = mult3a_String2(charToString(a), charToString(c)) + std::string(half_of_digits * 2, '0');
-
-
-	int zMax = std::max(z2.length(), std::max(z0.length(), z1.length()));
-
-	std::string z0RightPadded = z0 + std::string(zMax - z0.length(), '0');
-	std::string z1RightPadded = z1 + std::string(zMax - z1.length(), '0');
-	std::string z2RightPadded = z2 + std::string(zMax - z2.length(), '0');
-
-
-
-
-
-	int zRightPadMax = std::max(z2RightPadded.length(), std::max(z0RightPadded.length(), z1RightPadded.length()));
-
-	std::string z0FullPad = std::string(zRightPadMax - z0RightPadded.length(), '0') + z0RightPadded;
-	std::string z1FullPad = std::string(zRightPadMax - z1RightPadded.length(), '0') + z1RightPadded;
-	std::string z2FullPad = std::string(zRightPadMax - z2RightPadded.length(), '0') + z2RightPadded;
-
-	std::vector<std::string> midTermSubtrahends = { {z2FullPad},{z0FullPad} };
-	std::string middleTerm = longSubtraction(z1RightPadded, midTermSubtrahends);
-
-	std::vector<std::string> toAdd = {
-		{z2FullPad},
-		{middleTerm},
-		{z0FullPad}
-	};
-
-	return longAddition(toAdd);
-
+void padString(std::string &s1, std::string &s2) {
+	int sMax = std::max(s1.length(), s2.length());
+	s1 = std::string(sMax - s1.length(), '0') + s1;
+	s2 = std::string(sMax - s2.length(), '0') + s2;
 }
