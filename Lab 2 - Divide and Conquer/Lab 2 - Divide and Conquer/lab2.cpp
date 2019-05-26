@@ -82,7 +82,7 @@ int main()
 
 
 	//std::string result = mult3a_String("1234145671", "4567112341");
-	std::string result = mult3a_String("1234", "5678");
+	std::string result = mult3a_String("321321654987", "123456789123");
 	std::cout << std::endl << result;
 	//std::cout << std::endl << x * y << std::endl;
 
@@ -206,6 +206,9 @@ std::string longAddition(std::vector<std::string> &operands) {
 		summation.insert(0, std::to_string(sum2 % 10));
 		carry = sum2 / 10;
 		sum2 = 0;
+	}
+	if (carry >= 1) {
+		summation.insert(0, std::to_string(carry));
 	}
 	return summation;
 }
@@ -359,34 +362,29 @@ std::string mult3a_String(std::string x, std::string y)
 
 
 
-	//std::string a = std::to_string(std::stoi(x) / (long long int)pow(10, half_of_digits));
-	//std::string b = std::to_string(std::stoi(x) % (long long int)pow(10, half_of_digits));
-	//std::string c = std::to_string(std::stoi(y) / (long long int)pow(10, half_of_digits));
-	//std::string d = std::to_string(std::stoi(y) % (long long int)pow(10, half_of_digits));
+	std::string a = std::to_string(std::stoi(x) / (long long int)pow(10, half_of_digits));
+	std::string b = std::to_string(std::stoi(x) % (long long int)pow(10, half_of_digits));
+	std::string c = std::to_string(std::stoi(y) / (long long int)pow(10, half_of_digits));
+	std::string d = std::to_string(std::stoi(y) % (long long int)pow(10, half_of_digits));
+
+	int abMax = std::max(a.length(), b.length());
+	int dcMax = std::max(d.length(), c.length());
 
 
-	std::string a = (x.substr(0, half_of_digits));
-	std::string b = (x.substr(half_of_digits, max_num_of_digits));
+	std::vector<std::string> aPlusB = {
+		{std::string(abMax - a.length(),'0') + a},
+		{std::string(abMax - b.length(),'0') + b}
+	};
 
-	std::string c = (y.substr(0, half_of_digits));
-	std::string d = (y.substr(half_of_digits, max_num_of_digits));
+	std::vector<std::string> dPlusC = {
+	{std::string(dcMax - d.length(),'0') + d},
+	{std::string(dcMax - c.length(),'0') + c}
+	};
 
-	if (a.empty()) {
-		a = "0";
-	}
-	else if (b.empty()) {
-		b = "0";
-	}
-	else if (c.empty()) {
-		c = "0";
-	}
-	else if (d.empty()) {
-		d = "0";
-	}
 
-	std::string z0 = (mult3a_String(charToString(b), charToString(d)));
-	std::string z1 = (mult3a_String(charToString(std::to_string(std::stoi(a) + std::stoi(b))), charToString(std::to_string(std::stoi(c) + std::stoi(d)))));
-	std::string z2 = (mult3a_String(charToString(a), charToString(c)));
+	std::string z0 = mult3a_String(charToString(b), charToString(d));
+	std::string z1 = mult3a_String(charToString(longAddition(aPlusB)), charToString(longAddition(dPlusC)));
+	std::string z2 = mult3a_String(charToString(a), charToString(c));
 
 	std::vector<std::string> subtrahend = { {z2},{z0} };
 
@@ -398,13 +396,16 @@ std::string mult3a_String(std::string x, std::string y)
 
 
 	std::string z0PaddedRight = z0;
-	std::string z1PaddedRight = step4 + std::string(half_of_digits, '0');
+	std::string z1PaddedRight = z1 + std::string(half_of_digits, '0');
 	std::string z2PaddedRight = z2 + std::string(half_of_digits * 2, '0');
-	std::string s4String = (step4 + std::string(half_of_digits, '0'));
+	std::string s4PaddedRight = step4 + std::string(half_of_digits, '0');
 
-	std::string z0Padded = std::string(z2PaddedRight.length() - z0PaddedRight.length(), '0') + (z0PaddedRight);
-	std::string z2Padded = (z2PaddedRight); // stays the same 
-	std::string s4Padded = std::string(z2PaddedRight.length() - s4String.length(), '0') + s4String;
+	int zRightPadMax = std::max(std::max(z0PaddedRight.length(), z1PaddedRight.length()), std::max(z2PaddedRight.length(), s4PaddedRight.length()));
+
+
+	std::string z0Padded = std::string(zRightPadMax - z0PaddedRight.length(), '0') + (z0PaddedRight);
+	std::string z2Padded = z2PaddedRight; // stays the same 
+	std::string s4Padded = std::string(zRightPadMax - s4PaddedRight.length(), '0') + s4PaddedRight;
 
 
 	//send z1, z2, z3 to get added as strings
@@ -419,7 +420,6 @@ std::string mult3a_String(std::string x, std::string y)
 
 	return vecRes;
 }
-
 std::string charToString(char charachter) {
 	return std::string(1, charachter);
 }
@@ -496,8 +496,83 @@ std::string longSubtraction(std::string minuend, std::vector<std::string> subtra
 		toAdd.push_back(temp);
 	}
 
+	std::string subResult = longAddition(toAdd);
+	return subResult.erase(0, 1);
+	//return subResult;
+
+}
+
+std::string mult3a_String2(std::string x, std::string y) {
+
+
+	if ((x.length() < 2) && (y.length() < 2)) {
+		return std::to_string(std::stoi(x) * std::stoi(y));
+	}
+
+	long long int max_num_of_digits = std::max(x.length(), y.length());
+	long long int half_of_digits = std::ceil(max_num_of_digits / 2);
+
+	std::string a = std::to_string(std::stoi(x) / (long long int)pow(10, half_of_digits)); //high 1
+	std::string b = std::to_string(std::stoi(x) % (long long int)pow(10, half_of_digits));// low1
+	std::string c = std::to_string(std::stoi(y) / (long long int)pow(10, half_of_digits));//high2
+	std::string d = std::to_string(std::stoi(y) % (long long int)pow(10, half_of_digits));//low2
+
+	int abMax = std::max(a.length(), b.length());
+	int dcMax = std::max(d.length(), c.length());
+
+
+	std::vector<std::string> aPlusB = {
+		{std::string(abMax - a.length(),'0') + a},
+		{std::string(abMax - b.length(),'0') + b}
+	};
+
+	std::vector<std::string> dPlusC = {
+	{std::string(dcMax - d.length(),'0') + d},
+	{std::string(dcMax - c.length(),'0') + c}
+	};
+
+	a = std::string(abMax - a.length(), '0') + a;
+	b = std::string(abMax - b.length(), '0') + b;
+	c = std::string(abMax - c.length(), '0') + c;
+	d = std::string(abMax - d.length(), '0') + d;
+
+
+
+	std::cout << a << std::endl;
+	std::cout << b << std::endl;
+	std::cout << c << std::endl;
+	std::cout << d << std::endl;
+
+	std::string z0 = mult3a_String2(charToString(b), charToString(d));
+	std::string z1 = mult3a_String2(charToString(longAddition(aPlusB)), charToString(longAddition(dPlusC))) + std::string(half_of_digits, '0');
+	std::string z2 = mult3a_String2(charToString(a), charToString(c)) + std::string(half_of_digits * 2, '0');
+
+
+	int zMax = std::max(z2.length(), std::max(z0.length(), z1.length()));
+
+	std::string z0RightPadded = z0 + std::string(zMax - z0.length(), '0');
+	std::string z1RightPadded = z1 + std::string(zMax - z1.length(), '0');
+	std::string z2RightPadded = z2 + std::string(zMax - z2.length(), '0');
+
+
+
+
+
+	int zRightPadMax = std::max(z2RightPadded.length(), std::max(z0RightPadded.length(), z1RightPadded.length()));
+
+	std::string z0FullPad = std::string(zRightPadMax - z0RightPadded.length(), '0') + z0RightPadded;
+	std::string z1FullPad = std::string(zRightPadMax - z1RightPadded.length(), '0') + z1RightPadded;
+	std::string z2FullPad = std::string(zRightPadMax - z2RightPadded.length(), '0') + z2RightPadded;
+
+	std::vector<std::string> midTermSubtrahends = { {z2FullPad},{z0FullPad} };
+	std::string middleTerm = longSubtraction(z1RightPadded, midTermSubtrahends);
+
+	std::vector<std::string> toAdd = {
+		{z2FullPad},
+		{middleTerm},
+		{z0FullPad}
+	};
 
 	return longAddition(toAdd);
-
 
 }
