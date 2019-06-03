@@ -8,6 +8,7 @@
 #include <iterator>
 #include <tuple>
 #include <stack>
+#include <set>
 
 #include "lab3.h"
 
@@ -44,73 +45,35 @@ int main(int argc, char** argv)
 
 void kruskal(std::vector<std::vector<std::tuple<int, int>*>> list) {
 
+	std::vector<std::set<int>> connectedComponents(list.size());
+
+	std::set<int> unionResult = { 1 };
+
+	for (size_t x = 0; x < connectedComponents.size(); ++x) {
+		connectedComponents[x].insert(x);
+	}
+
+
 	std::vector<std::string> result;
 
-	//bool *vertexVisited = new bool[list.size()]();
-	std::vector<bool> vertexVisited(list.size());
 
 	int vertexCount = list.size() - 1;
 	int MSTEdgesMax = vertexCount - 1;
 	int MSTEdges = 0;
 
-	//Choose any random vertex
 	int startVertex = 1;
-	vertexVisited[0] = true;
-	vertexVisited[startVertex] = true;
 
 
-	//Choose the edge with the lowest weight
+
 	int lowestWeight = INT_MAX;
 	int lowestWeightVertex = -1;
-	int listIndex = 0;
 	int otherCounter = 0;
 	int otherIndex = 0;
 
 	int setIndex = 0;
-	//for (auto connectedVertexes : list[startVertex]) {
-	//	if (std::get<1>(*connectedVertexes) < lowestWeight) {
-	//		lowestWeight = std::get<1>(*connectedVertexes);
-	//	}
-	//}
 
-	//Find the lowest weight in entire graph
 
-	//Change this to only loop through the max # of verticies
-	//while (!(std::all_of(vertexVisited.begin(), vertexVisited.end(), [](bool v) { return v; }))) {
 	while (MSTEdges != MSTEdgesMax) {
-
-
-		//for (auto connectedVertexes : list) {
-		//	otherIndex = 0;
-		//	for (auto connectedTo : connectedVertexes) {
-		//		if (std::get<1>(*connectedTo) < lowestWeight) {
-		//			lowestWeightVertex = std::get<0>(*connectedTo);
-		//			lowestWeight = std::get<1>(*connectedTo);
-		//			listIndex++;
-		//			otherIndex = otherCounter;
-		//		}
-		//		otherCounter++;
-		//		//std::cout << "(" << std::get<0>(*connectedTo) << ", " << std::get<1>(*connectedTo) << ")" << std::endl;
-		//	}
-		//}
-
-
-		//for (auto it = list.begin(); it != list.end(); ++it) {
-
-		//	auto x = *it;
-
-		//	for (auto it2 = x.begin(); it2 != x.end(); ++it2) {
-
-		//		auto y = *it2;
-
-		//		if (std::get<1>(*y) < lowestWeight) {
-		//			lowestWeightVertex = std::get<0>(*y);
-		//			lowestWeight = std::get<1>(*y);
-		//			listIndex++;
-		//			otherIndex = otherCounter;
-		//		}
-		//	}
-		//}
 
 		for (size_t i = 0; i < list.size(); ++i) {
 			for (size_t j = 0; j < list[i].size(); ++j) {
@@ -118,14 +81,13 @@ void kruskal(std::vector<std::vector<std::tuple<int, int>*>> list) {
 				if (std::get<1>(*m) < lowestWeight) {
 					lowestWeightVertex = std::get<0>(*m);
 					lowestWeight = std::get<1>(*m);
-					listIndex++;
 					otherIndex = otherCounter;
 					setIndex = i;
 				}
 			}
 		}
 
-
+		//if the element is in the set
 
 
 
@@ -134,18 +96,19 @@ void kruskal(std::vector<std::vector<std::tuple<int, int>*>> list) {
 
 
 		setVisited(list, setIndex, otherIndex, std::make_tuple(lowestWeightVertex, lowestWeight));
-		vertexVisited[setIndex] = true;
-		vertexVisited[lowestWeightVertex] = true;
+
 		MSTEdges++;
 		std::cout << std::endl << setIndex << " -> " << lowestWeightVertex << " Weight: " << lowestWeight << std::endl;
 
-		//std::cout << std::endl << "Connected To:  " << lowestWeightVertex << " With Weight: " << lowestWeight << std::endl;
-		//std::cout << std::endl << "List Index:   " << setIndex << std::endl;
-		//std::cout << std::endl << "Inner Index:  " << otherIndex << std::endl;
-
 		result.emplace_back(std::to_string(setIndex) + std::string(" -> ") + std::to_string(lowestWeightVertex) + std::string(" Weight: ") + std::to_string(lowestWeight));
 
-		printAdjacencyList(list);
+
+		if ((unionResult.find(setIndex) != unionResult.end()) && (unionResult.find(lowestWeightVertex) != unionResult.end())) {
+			unionResult.insert({ setIndex,lowestWeightVertex });
+		}
+
+
+		//printAdjacencyList(list);
 
 		lowestWeight = INT_MAX;
 		lowestWeightVertex = -1;
@@ -156,93 +119,19 @@ void kruskal(std::vector<std::vector<std::tuple<int, int>*>> list) {
 
 	}
 
-
-	//setVisited(list, listIndex, otherIndex);
-	//vertexVisited[listIndex] = true;
-
-	//Checks if all vertex visited
-	//std::cout << std::all_of(vertexVisited.begin(), vertexVisited.end(), [](bool v) { return v; }) << std::endl;
-
-
-
-
-
-
-	//printAdjacencyList(list);
-
-	//delete[] vertexVisited;
 	std::cout << "MST Found" << std::endl;
 
-	for (auto s : result) {
-		std::cout << s << std::endl;
+	//for (auto s : result) {
+	//	std::cout << s << std::endl;
+	//}
+
+	for (auto x : unionResult) {
+		std::cout << x << ", ";
 	}
+	std::cout << std::endl;
 
 }
 
-void test(std::vector<std::vector<std::tuple<int, int>*>> list) {
-	std::vector<std::tuple<int, int, int>> edges;
-	std::vector<std::tuple<int, std::tuple<int, int>>> edges2;
-
-
-	int vertexCounter = 0;
-	int connectedToCounter = 0;
-
-	for (auto x : list) {
-		std::cout << vertexCounter << std::endl;
-
-		for (auto y : x) {
-			//std::cout << "(" << std::get<0>(*y) << ", " << std::get<1>(*y) << ")" << std::endl;
-			edges.emplace_back(std::make_tuple(std::get<1>(*y), vertexCounter, std::get<0>(*y)));
-
-			edges2.emplace_back(std::make_tuple(std::get<1>(*y), std::make_tuple(vertexCounter, std::get<0>(*y))));
-
-
-			connectedToCounter++;
-		}
-		vertexCounter++;
-	}
-
-
-
-	std::cout << std::endl << std::endl;
-
-
-
-
-	std::sort(edges2.begin(), edges2.end(), sortByFirstReverse);
-
-	for (auto z : edges2) {
-		auto x = std::get<1>(z);
-		std::cout << std::get<0>(z) << " (" << std::get<0>(std::get<1>(z)) << ", " << std::get<1>(std::get<1>(z)) << ")" << std::endl;
-	}
-
-
-	std::stack<std::tuple<int, std::tuple<int, int>>> toDo;
-
-	for (auto x : edges2) {
-		toDo.push(x);
-	}
-
-	while (!toDo.empty()) {
-
-	}
-
-
-
-	//for (auto z : edges) {
-	//	//Vertex1 to vertex2 with weight of
-	//	std::cout << std::get<0>(z) << " (" << std::get<1>(z) << ", " << std::get<2>(z) << ")" << std::endl;
-	//}
-
-	//std::sort(edges.begin(), edges.end(), sortByFirst);
-	//std::cout << std::endl << std::endl;
-
-	//for (auto z : edges) {
-	//	//Vertex1 to vertex2 with weight of
-	//	std::cout << std::get<0>(z) << " (" << std::get<1>(z) << ", " << std::get<2>(z) << ")" << std::endl;
-	//}
-
-}
 
 
 //Read graph into an adjacency list
