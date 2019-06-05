@@ -90,7 +90,7 @@ void kruskal(std::vector<std::vector<std::tuple<int, int>*>> list) {
 		//if the element is in the set
 
 
-
+		//Graph is disonncted. Find a way to reloop when the MST still has ways to go
 
 
 
