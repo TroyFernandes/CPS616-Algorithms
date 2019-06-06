@@ -9,8 +9,153 @@
 #include <tuple>
 #include <stack>
 #include <set>
+#include <climits>
 
 #include "lab3.h"
+
+#pragma region BinaryHeap
+
+////
+// Prototype of a utility function to swap two integers
+void swap(int *x, int *y);
+
+// A class for Min Heap
+class MinHeap
+{
+	int *harr; // pointer to array of elements in heap
+	int capacity; // maximum possible size of min heap
+	int heap_size; // Current number of elements in min heap
+public:
+	// Constructor
+	MinHeap(int capacity);
+
+	// to heapify a subtree with the root at given index
+	void MinHeapify(int);
+
+	int parent(int i) { return (i - 1) / 2; }
+
+	// to get index of left child of node at index i
+	int left(int i) { return (2 * i + 1); }
+
+	// to get index of right child of node at index i
+	int right(int i) { return (2 * i + 2); }
+
+	// to extract the root which is the minimum element
+	int extractMin();
+
+	// Decreases key value of key at index i to new_val
+	void decreaseKey(int i, int new_val);
+
+	// Returns the minimum key (key at root) from min heap
+	int getMin() { return harr[0]; }
+
+	// Deletes a key stored at index i
+	void deleteKey(int i);
+
+	// Inserts a new key 'k'
+	void insertKey(int k);
+};
+
+
+// Constructor: Builds a heap from a given array a[] of given size
+MinHeap::MinHeap(int cap)
+{
+	heap_size = 0;
+	capacity = cap;
+	harr = new int[cap];
+}
+
+// Inserts a new key 'k'
+void MinHeap::insertKey(int k)
+{
+	if (heap_size == capacity)
+	{
+		std::cout << "\nOverflow: Could not insertKey\n";
+		return;
+	}
+
+	// First insert the new key at the end
+	heap_size++;
+	int i = heap_size - 1;
+	harr[i] = k;
+
+	// Fix the min heap property if it is violated
+	while (i != 0 && harr[parent(i)] > harr[i])
+	{
+		swap(&harr[i], &harr[parent(i)]);
+		i = parent(i);
+	}
+}
+
+// Decreases value of key at index 'i' to new_val.  It is assumed that
+// new_val is smaller than harr[i].
+void MinHeap::decreaseKey(int i, int new_val)
+{
+	harr[i] = new_val;
+	while (i != 0 && harr[parent(i)] > harr[i])
+	{
+		swap(&harr[i], &harr[parent(i)]);
+		i = parent(i);
+	}
+}
+
+// Method to remove minimum element (or root) from min heap
+int MinHeap::extractMin()
+{
+	if (heap_size <= 0)
+		return INT_MAX;
+	if (heap_size == 1)
+	{
+		heap_size--;
+		return harr[0];
+	}
+
+	// Store the minimum value, and remove it from heap
+	int root = harr[0];
+	harr[0] = harr[heap_size - 1];
+	heap_size--;
+	MinHeapify(0);
+
+	return root;
+}
+
+
+// This function deletes key at index i. It first reduced value to minus
+// infinite, then calls extractMin()
+void MinHeap::deleteKey(int i)
+{
+	decreaseKey(i, INT_MIN);
+	extractMin();
+}
+
+// A recursive method to heapify a subtree with the root at given index
+// This method assumes that the subtrees are already heapified
+void MinHeap::MinHeapify(int i)
+{
+	int l = left(i);
+	int r = right(i);
+	int smallest = i;
+	if (l < heap_size && harr[l] < harr[i])
+		smallest = l;
+	if (r < heap_size && harr[r] < harr[smallest])
+		smallest = r;
+	if (smallest != i)
+	{
+		swap(&harr[i], &harr[smallest]);
+		MinHeapify(smallest);
+	}
+}
+
+// A utility function to swap two elements
+void swap(int *x, int *y)
+{
+	int temp = *x;
+	*x = *y;
+	*y = temp;
+}
+//// END OF BINARY HEAP CLASS
+#pragma endregion BinaryHeap
+
 
 int main(int argc, char** argv)
 {
@@ -30,9 +175,9 @@ int main(int argc, char** argv)
 
 	auto x = readGraph(inputFile);
 
-	//printAdjacencyList(x);
+	printAdjacencyList(x);
 
-	kruskal(x);
+	prim(x);
 
 
 	//Wait for keypress before exiting
@@ -132,7 +277,71 @@ void kruskal(std::vector<std::vector<std::tuple<int, int>*>> list) {
 
 }
 
+void prim(std::vector<std::vector<std::tuple<int, int>*>> list) {
 
+
+	std::vector<int> MSTPrev;
+
+
+	std::vector<std::vector<int>> matrix(list.size() - 1, std::vector<int>(list.size() - 1));
+
+
+	//Create a priority queue of size n, where n = # of verticies
+	MinHeap queue(list.size() - 1);
+
+	//Initialize
+	std::vector<std::tuple<bool, int, int>*> table;
+	for (auto x = 0; x < list.size(); ++x) {
+		std::tuple<bool, int, int>* row = new std::tuple<bool, int, int>(false, INT_MAX, 0);
+		//std::cout << "(" << toVertex << ", " << token << ")" << std::endl;
+		table.push_back(row);
+	}
+
+
+	//Visit Root Node
+	std::get<0>(*(table[1])) = true;
+	std::get<1>(*(table[1])) = 0;
+	std::get<2>(*(table[1])) = 0;
+	MSTPrev.push_back(1);
+
+
+	//Update connected verticies
+	updateConnectedVertices(list, table, 1);
+
+
+	int lowestVertexWeight = INT_MAX;
+	int lowestWeightVertex;
+
+	int parentVertex;
+
+	for (size_t i = 0; i < list.size() - 1 - 1; i++) {
+		lowestVertexWeight = INT_MAX;
+		for (size_t x = 2; x < table.size(); ++x) {
+			if (!std::get<0>(*(table[x]))) {
+				if (std::get<1>(*(table[x])) < lowestVertexWeight) {
+					lowestVertexWeight = std::get<1>(*(table[x]));
+					lowestWeightVertex = x;
+					parentVertex = std::get<2>(*(table[x]));
+				}
+			}
+
+		}
+
+		//std::cout << "Lowest vertex Weight: " << lowestVertexWeight << std::endl;
+		//std::cout << "Lowest weight vertex: " << lowestWeightVertex << std::endl;
+
+		std::cout << "Vertex: " << parentVertex << " connected to: " << lowestWeightVertex << " weight: " << lowestVertexWeight << std::endl;;
+
+		updateConnectedVertices(list, table, lowestWeightVertex);
+		printTable(table);
+		MSTPrev.push_back(lowestWeightVertex);
+
+	}
+
+	printMatrix(matrix);
+
+
+}
 
 //Read graph into an adjacency list
 std::vector<std::vector<std::tuple<int, int>*>> readGraph(std::string filename) {
@@ -143,9 +352,6 @@ std::vector<std::vector<std::tuple<int, int>*>> readGraph(std::string filename) 
 
 	int vertex = 1;
 	int toVertex = 1;
-
-
-
 
 
 	if (myfile.is_open())
@@ -273,7 +479,7 @@ void setVisited(std::vector<std::vector<std::tuple<int, int>*>>& list, int atVer
 	//printAdjacencyList(list);
 
 
-	//1 is connected to 2 
+	//1 is connected to 2
 	//atvertex is connected to atconnectedvertex
 
 	//2 is connected to 1
@@ -282,3 +488,54 @@ void setVisited(std::vector<std::vector<std::tuple<int, int>*>>& list, int atVer
 
 }
 
+void printTable(std::vector<std::tuple<bool, int, int>*> table) {
+	int counter = 0;
+	std::cout << std::endl << "\tV?\tD\tP" << std::endl;
+
+	for (auto x : table) {
+		int var = (std::get<1>(*x) == INT_MAX) ? -1 : std::get<1>(*x);
+		std::cout << counter++ << "\t" << std::get<0>(*x) << "\t" << var << "\t" << std::get<2>(*x) << std::endl;
+	}
+}
+
+void updateConnectedVertices(std::vector<std::vector<std::tuple<int, int>*>>& list, std::vector<std::tuple<bool, int, int>*>& table, int atVertex) {
+	int vertex;
+	std::get<0>(*(table[atVertex])) = true;
+
+	for (auto y : list[atVertex]) {
+		std::get<1>(*(table[std::get<0>(*y)])) = (std::get<1>(*y) < std::get<1>(*(table[std::get<0>(*y)]))) ? std::get<1>(*y) : std::get<1>(*(table[std::get<0>(*y)]));
+		vertex = (std::get<1>(*y) < std::get<1>(*(table[std::get<0>(*y)]))) ? atVertex : std::get<0>(*(table[std::get<0>(*y)]));
+		std::get<2>(*(table[std::get<0>(*y)])) = vertex;
+	}
+}
+
+//bool checkIfVisited(std::vector<int>& MST, int vertex) {
+//	return std::find(MST.begin(), MST.end(), vertex) != MST.end();
+//}
+
+void addToMST(std::vector<std::tuple<int, int>*>& MST, int vertex, int weight) {
+	std::tuple< int, int>* temp = new std::tuple< int, int>(vertex, weight);
+	MST.push_back(temp);
+}
+
+void printMatrix(std::vector<std::vector<int>> matrix) {
+	std::cout << std::endl << std::endl;
+	for (auto i : matrix)
+	{
+		for (auto j : i) {
+			std::cout << std::setw(5) << j;
+		}
+		std::cout << std::endl;
+	}
+}
+
+//int findParent(std::vector<std::vector<std::tuple<int, int>*>>& list, std::tuple<int, int>* pair) {
+//	for (auto x : list) {
+//		auto it = std::find_if(x.begin(), x.end(), pair);
+//		if (it != x.end()) {
+//			std::cout << "Found" << std::endl;
+//			return (it - x.begin());
+//		}
+//	}
+//
+//}

@@ -8,7 +8,7 @@
 #include "lab4.h"
 
 
-int availableRooms = NULL;
+int availableRooms = -1;
 
 int main(int argc, char** argv)
 {
@@ -18,25 +18,17 @@ int main(int argc, char** argv)
 
 	if ((argv != NULL) && (argv[1] == '\0')) {
 		printf("No input bookings file specified!\n");
-		std::cin.ignore();
-		return 0;
 	}
 
-
-	//Get the filename passed as a command line argument
 	std::string inputFile = argv[1];
 
 	auto bookings = readBookings(inputFile);
 
 	schedule(bookings);
 
-
-	//Wait for keypress before exiting
-	std::cin.ignore();
-
-	return 0;
 }
 
+//Reads bookings file and returns a list of tuples containing all the pending bookings
 std::vector<std::tuple<int, int>*> readBookings(std::string filename) {
 
 	std::string line;
@@ -46,8 +38,7 @@ std::vector<std::tuple<int, int>*> readBookings(std::string filename) {
 
 	std::vector<std::tuple<int, int>*> bookings;
 
-
-	//Discard the available bookings
+	//Save the available number of rooms
 	std::getline(myfile, line);
 	availableRooms = std::stoi(line);
 
@@ -68,19 +59,18 @@ std::vector<std::tuple<int, int>*> readBookings(std::string filename) {
 		bookings.push_back(booking);
 	}
 
+	//Sort the bookings by finish time
 	std::sort(bookings.begin(), bookings.end(), sortbySec);
 
 
-
-	for (auto x : bookings) {
-		std::cout << "(" << std::get<0>(*x) << ", " << std::get<1>(*x) << "), ";
-	}
-	std::cout << std::endl << std::endl;
-
-
+	//for (auto x : bookings) {
+	//	std::cout << "(" << std::get<0>(*x) << ", " << std::get<1>(*x) << "), ";
+	//}
+	//std::cout << std::endl << std::endl;
 
 	return bookings;
 }
+
 
 bool sortbySec(const std::tuple<int, int> *a, const std::tuple<int, int> *b) {
 	return (std::get<1>(*a) < std::get<1>(*b));
@@ -88,47 +78,27 @@ bool sortbySec(const std::tuple<int, int> *a, const std::tuple<int, int> *b) {
 
 bool canAccommodate(std::vector<std::tuple<int, int>*>& room, const std::tuple<int, int> *toBook) {
 
+	//If there's no prevous booking, then the room can accomodate a booking
 	if ((int)(room.size()) - 1 < 0) {
 		return true;
 	}
 
 	return(
-
-		//The room to be booked dosen't start while another room is booked
+		//Return true if the pending booking ends after (or right when) the previous booking ends
 		(std::get<0>(*toBook) >= std::get<1>(*(room[room.size() - 1])))
-
 		);
 
 }
 
 void schedule(std::vector<std::tuple<int, int>*> bookings) {
-	std::tuple<int, int>* previousBooking = bookings[0];
 
+	//Create a vector containing all the rooms
 	std::vector<std::vector<std::tuple<int, int>*>> rooms(availableRooms);
 	rooms[0].push_back(bookings[0]);
 
-	std::vector<std::tuple<int, int>*> room1, room2, room3, unavailable;
+	//Bookings that can't be accommodated
+	std::vector<std::tuple<int, int>*> unavailable;
 
-	room1.push_back(previousBooking);
-
-
-	//for (size_t x = 1; x < bookings.size(); ++x) {
-
-	//	if (canAccommodate(room1, bookings[x])) {
-	//		room1.push_back(bookings[x]);
-	//		continue;
-	//	}
-
-	//	if (canAccommodate(room2, bookings[x])) {
-	//		room2.push_back(bookings[x]);
-	//		continue;
-	//	}
-	//	if (canAccommodate(room3, bookings[x])) {
-	//		room3.push_back(bookings[x]);
-	//		continue;
-	//	}
-	//	unavailable.push_back(bookings[x]);
-	//}
 
 	for (size_t x = 1; x < bookings.size(); ++x) {
 
@@ -137,6 +107,7 @@ void schedule(std::vector<std::tuple<int, int>*> bookings) {
 				rooms[y].push_back(bookings[x]);
 				break;
 			}
+			//After checking all the rooms, we can't accomodate the booking
 			if (y + 1 == availableRooms) {
 				unavailable.push_back(bookings[x]);
 
@@ -147,28 +118,7 @@ void schedule(std::vector<std::tuple<int, int>*> bookings) {
 
 	}
 
-
-
 	std::cout << "Bookings: " << std::endl;
-
-	//std::cout << "1 ";
-	//for (auto x : room1) {
-	//	std::cout << "(" << std::get<0>(*x) << ", " << std::get<1>(*x) << ") ";
-	//}
-	//std::cout << std::endl;
-	//std::cout << "2 ";
-	//for (auto x : room2) {
-	//	std::cout << "(" << std::get<0>(*x) << ", " << std::get<1>(*x) << ") ";
-	//}
-	//std::cout << std::endl;
-	//std::cout << "3 ";
-	//for (auto x : room3) {
-	//	std::cout << "(" << std::get<0>(*x) << ", " << std::get<1>(*x) << ") ";
-	//}
-	//for (auto x : unavailable) {
-	//	std::cout << "(" << std::get<0>(*x) << ", " << std::get<1>(*x) << ") ";
-	//}
-	//std::cout << std::endl;
 
 	for (size_t x = 0; x < rooms.size(); ++x) {
 		std::cout << x + 1 << " ";
