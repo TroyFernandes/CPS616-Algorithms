@@ -240,7 +240,7 @@ void prim(std::vector<std::vector<std::tuple<int, int>*>> list) {
 			}
 
 		}
-
+		printTable(table);
 		//std::cout << "Lowest vertex Weight: " << lowestVertexWeight << std::endl;
 		//std::cout << "Lowest weight vertex: " << lowestWeightVertex << std::endl;
 
@@ -417,14 +417,14 @@ void printTable(std::vector<std::tuple<bool, int, int>*> table) {
 void updateConnectedVertices(std::vector<std::vector<std::tuple<int, int>*>>& list, std::vector<std::tuple<bool, int, int>*>& table, int atVertex) {
 	int vertex;
 	std::get<0>(*(table[atVertex])) = true;
-
 	for (auto y : list[atVertex]) {
-		std::get<1>(*(table[std::get<0>(*y)])) = (std::get<1>(*y) < std::get<1>(*(table[std::get<0>(*y)]))) ? std::get<1>(*y) : std::get<1>(*(table[std::get<0>(*y)]));
-		vertex = (std::get<1>(*y) < std::get<1>(*(table[std::get<0>(*y)]))) ? atVertex : std::get<0>(*(table[std::get<0>(*y)]));
-		std::get<2>(*(table[std::get<0>(*y)])) = atVertex;
+		//Update the table if the current distance in the table isn't already the lowest
+		if (!(std::get<1>(*table[std::get<0>(*y)]) < std::get<1>(*y))) {
+			std::get<1>(*table[std::get<0>(*y)]) = std::get<1>(*y);
+			std::get<2>(*table[std::get<0>(*y)]) = atVertex;
+		}
+
 	}
-
-
 }
 
 //bool checkIfVisited(std::vector<int>& MST, int vertex) {
