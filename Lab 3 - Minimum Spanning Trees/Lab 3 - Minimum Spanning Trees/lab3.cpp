@@ -188,99 +188,13 @@ int main(int argc, char** argv)
 }
 
 
-void kruskal(std::vector<std::vector<std::tuple<int, int>*>> list) {
-
-	std::vector<std::set<int>> connectedComponents(list.size());
-
-	std::set<int> unionResult = { 1 };
-
-	for (size_t x = 0; x < connectedComponents.size(); ++x) {
-		connectedComponents[x].insert(x);
-	}
-
-
-	std::vector<std::string> result;
-
-
-	int vertexCount = list.size() - 1;
-	int MSTEdgesMax = vertexCount - 1;
-	int MSTEdges = 0;
-
-	int startVertex = 1;
-
-
-
-	int lowestWeight = INT_MAX;
-	int lowestWeightVertex = -1;
-	int otherCounter = 0;
-	int otherIndex = 0;
-
-	int setIndex = 0;
-
-
-	while (MSTEdges != MSTEdgesMax) {
-
-		for (size_t i = 0; i < list.size(); ++i) {
-			for (size_t j = 0; j < list[i].size(); ++j) {
-				auto m = list[i][j];
-				if (std::get<1>(*m) < lowestWeight) {
-					lowestWeightVertex = std::get<0>(*m);
-					lowestWeight = std::get<1>(*m);
-					otherIndex = otherCounter;
-					setIndex = i;
-				}
-			}
-		}
-
-		//if the element is in the set
-
-
-		//Graph is disonncted. Find a way to reloop when the MST still has ways to go
-
-
-
-
-		setVisited(list, setIndex, otherIndex, std::make_tuple(lowestWeightVertex, lowestWeight));
-
-		MSTEdges++;
-		std::cout << std::endl << setIndex << " -> " << lowestWeightVertex << " Weight: " << lowestWeight << std::endl;
-
-		result.emplace_back(std::to_string(setIndex) + std::string(" -> ") + std::to_string(lowestWeightVertex) + std::string(" Weight: ") + std::to_string(lowestWeight));
-
-
-		if ((unionResult.find(setIndex) != unionResult.end()) && (unionResult.find(lowestWeightVertex) != unionResult.end())) {
-			unionResult.insert({ setIndex,lowestWeightVertex });
-		}
-
-
-		//printAdjacencyList(list);
-
-		lowestWeight = INT_MAX;
-		lowestWeightVertex = -1;
-		setIndex = 0;
-		otherCounter = 0;
-		otherIndex = 0;
-
-
-	}
-
-	std::cout << "MST Found" << std::endl;
-
-	//for (auto s : result) {
-	//	std::cout << s << std::endl;
-	//}
-
-	for (auto x : unionResult) {
-		std::cout << x << ", ";
-	}
-	std::cout << std::endl;
-
-}
 
 void prim(std::vector<std::vector<std::tuple<int, int>*>> list) {
 
 
 	std::vector<int> MSTPrev;
+
+	std::vector<std::tuple<int, int>*> connectedComponents;
 
 
 	std::vector<std::vector<int>> matrix(list.size() - 1, std::vector<int>(list.size() - 1));
@@ -310,9 +224,9 @@ void prim(std::vector<std::vector<std::tuple<int, int>*>> list) {
 
 
 	int lowestVertexWeight = INT_MAX;
-	int lowestWeightVertex;
+	int lowestWeightVertex = 0;
 
-	int parentVertex;
+	int parentVertex = 0;
 
 	for (size_t i = 0; i < list.size() - 1 - 1; i++) {
 		lowestVertexWeight = INT_MAX;
@@ -331,6 +245,8 @@ void prim(std::vector<std::vector<std::tuple<int, int>*>> list) {
 		//std::cout << "Lowest weight vertex: " << lowestWeightVertex << std::endl;
 
 		std::cout << "Vertex: " << parentVertex << " connected to: " << lowestWeightVertex << " weight: " << lowestVertexWeight << std::endl;;
+
+		addToMST2(matrix, parentVertex, lowestWeightVertex, lowestVertexWeight);
 
 		updateConnectedVertices(list, table, lowestWeightVertex);
 		printTable(table);
@@ -505,8 +421,10 @@ void updateConnectedVertices(std::vector<std::vector<std::tuple<int, int>*>>& li
 	for (auto y : list[atVertex]) {
 		std::get<1>(*(table[std::get<0>(*y)])) = (std::get<1>(*y) < std::get<1>(*(table[std::get<0>(*y)]))) ? std::get<1>(*y) : std::get<1>(*(table[std::get<0>(*y)]));
 		vertex = (std::get<1>(*y) < std::get<1>(*(table[std::get<0>(*y)]))) ? atVertex : std::get<0>(*(table[std::get<0>(*y)]));
-		std::get<2>(*(table[std::get<0>(*y)])) = vertex;
+		std::get<2>(*(table[std::get<0>(*y)])) = atVertex;
 	}
+
+
 }
 
 //bool checkIfVisited(std::vector<int>& MST, int vertex) {
@@ -519,23 +437,25 @@ void addToMST(std::vector<std::tuple<int, int>*>& MST, int vertex, int weight) {
 }
 
 void printMatrix(std::vector<std::vector<int>> matrix) {
-	std::cout << std::endl << std::endl;
+
+	std::ofstream outfile("CCPS616_Lab3_TroyFernandes.txt");
+
+
+
+	//outfile << std::endl << std::endl;
+	outfile << std::setw(4) << std::left << matrix.size() << std::endl;
 	for (auto i : matrix)
 	{
 		for (auto j : i) {
-			std::cout << std::setw(5) << j;
+			outfile << std::setw(4) << std::left << j;
 		}
-		std::cout << std::endl;
+		outfile << std::endl;
 	}
+	outfile.close();
 }
 
-//int findParent(std::vector<std::vector<std::tuple<int, int>*>>& list, std::tuple<int, int>* pair) {
-//	for (auto x : list) {
-//		auto it = std::find_if(x.begin(), x.end(), pair);
-//		if (it != x.end()) {
-//			std::cout << "Found" << std::endl;
-//			return (it - x.begin());
-//		}
-//	}
-//
-//}
+
+void addToMST2(std::vector<std::vector<int>>& MST, int vertex, int toVertex, int weight) {
+	MST[vertex - 1][toVertex - 1] = weight;
+	MST[toVertex - 1][vertex - 1] = weight;
+}
