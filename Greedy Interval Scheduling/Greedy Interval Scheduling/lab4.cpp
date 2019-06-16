@@ -16,8 +16,10 @@ int main(int argc, char** argv)
 
 
 
-	if ((argv != NULL) && (argv[1] == '\0')) {
+	if (argc < 2) {
 		printf("No input bookings file specified!\n");
+		std::cin.ignore();
+		return 0;
 	}
 
 	std::string inputFile = argv[1];
@@ -26,6 +28,7 @@ int main(int argc, char** argv)
 
 	schedule(bookings);
 
+	return 0;
 }
 
 //Reads bookings file and returns a list of tuples containing all the pending bookings
@@ -118,17 +121,20 @@ void schedule(std::vector<std::tuple<int, int>*> bookings) {
 
 	}
 
-	std::cout << "Bookings: " << std::endl;
+	std::ofstream outfile("CCPS616_Lab4_TroyFernandes.txt");
+
+
+	outfile << "Bookings: " << std::endl;
 
 	for (size_t x = 0; x < rooms.size(); ++x) {
-		std::cout << x + 1 << " ";
+		outfile << x + 1 << " ";
 		for (auto x : rooms[x]) {
-			std::cout << "(" << std::get<0>(*x) << ", " << std::get<1>(*x) << ") ";
+			outfile << "(" << std::get<0>(*x) << ", " << std::get<1>(*x) << ") ";
 		}
-		std::cout << std::endl;
+		outfile << std::endl;
 	}
 	for (auto x : unavailable) {
-		std::cout << "(" << std::get<0>(*x) << ", " << std::get<1>(*x) << ") ";
+		outfile << "(" << std::get<0>(*x) << ", " << std::get<1>(*x) << ") ";
 	}
-	std::cout << std::endl;
+	outfile << std::endl;
 }

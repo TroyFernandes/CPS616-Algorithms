@@ -7,8 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <tuple>
-#include <stack>
-#include <set>
+
 #include <climits>
 
 #include "lab3.h"
@@ -20,7 +19,8 @@ int main(int argc, char** argv)
 	std::cout << "CCPS616 - Lab 3 - Troy Fernandes" << std::endl << std::endl;
 
 
-	if ((argv != NULL) && (argv[1] == '\0')) {
+	//if ((argv != NULL) && (argv[1] == '\0')) {
+	if (argc < 2) {
 		printf("No input graph file specified!\n");
 		std::cin.ignore();
 		return 0;
@@ -38,12 +38,7 @@ int main(int argc, char** argv)
 	//Run prim's algo on the adjacency list
 	prim(x);
 
-
-	//Wait for keypress before exiting
-	std::cin.ignore();
-
 	return 0;
-
 }
 
 
@@ -167,17 +162,12 @@ std::vector<std::vector<std::tuple<int, int>*>> readGraph(std::string filename) 
 			toVertex = 1;
 			vertex++;
 		}
+		myfile.close();
 
 		return adjacencyList;
 
 	}
-	else {
-		//error and return empty?
-	}
 
-
-
-	myfile.close();
 
 }
 
