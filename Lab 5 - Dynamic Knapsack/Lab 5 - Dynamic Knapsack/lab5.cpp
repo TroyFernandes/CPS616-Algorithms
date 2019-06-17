@@ -6,7 +6,6 @@
 #include <vector>
 #include <tuple>
 #include <algorithm>
-#include <set>
 #include "lab5.h"
 
 //Max weight the "bag" can carry
@@ -16,14 +15,10 @@ int maxWeight = -1;
 std::vector<int> weights;
 std::vector<int> values;
 
-std::set<int> items;
-
 
 int main(int argc, char** argv)
 {
 	std::cout << "CCPS616 - Lab 5 - Troy Fernandes" << std::endl << std::endl;
-
-
 
 	if (argc < 2) {
 		printf("No input file specified!\n");
@@ -33,14 +28,32 @@ int main(int argc, char** argv)
 
 	std::string inputFile = argv[1];
 
-	//Create the dummy initial inputs
+	//The first element for both arrays must be an unused value
 	weights.push_back(0);
 	values.push_back(0);
 
-	auto items = readFile(inputFile);
+	//Read the values from the files and place them into the "weights" and "values" arrays
+	readFile(inputFile);
+
+	//Solve using the brute force approach (print out ksBF to see value)
+	int ksBF = bruteforceKnapsack(values.size() - 1, maxWeight);
+
+	//Create our memoization array:
+	//Rows = # of values
+	//Columns = total weight + 1
+	//This creates an array with the very top row and leftmost column with zeros
+	std::vector<std::vector<int>> arr((values.size()), std::vector<int>((maxWeight + 1)));
+
+	//Solve using the dynamic approach
+	int ksD = dynamicKnapsack(arr, values.size(), maxWeight);
+
+	//Gets a list of indexes for the items we chose
+	auto res = getItems(arr);
+
+	//Print out those results 
+	printResults(arr, res);
 
 
-	recursiveKnapsack(items);
 
 	//Wait for keypress before exiting
 	std::cin.ignore();
@@ -49,14 +62,14 @@ int main(int argc, char** argv)
 	return 0;
 }
 
-std::vector<std::tuple<int, int>*> readFile(std::string filename) {
+//Read the data.txt file 
+void readFile(std::string filename) {
 
 	std::string line;
 	std::ifstream myfile(filename);
 
 	std::vector<int> temp;
 
-	std::vector<std::tuple<int, int>*> bookings;
 
 	//Save the available number of rooms
 	std::getline(myfile, line);
@@ -76,70 +89,42 @@ std::vector<std::tuple<int, int>*> readFile(std::string filename) {
 	for (size_t x = 0; x < step; ++x) {
 		weights.push_back(temp[x]);
 		values.push_back(temp[x + step]);
-		//std::tuple<int, int>* booking = new std::tuple<int, int>(temp[x], temp[x + step]);
-		//bookings.push_back(booking);
 	}
 
-	//printTable(bookings);
-
-	return bookings;
-}
-
-void printTable(std::vector<std::tuple<int, int>*> table) {
-	int counter = 1;
-	std::cout << std::endl << "Item\tWeight\tValue" << std::endl;
-
-	for (auto x : table) {
-		std::cout << counter++ << "\t" << std::get<0>(*x) << "\t" << std::get<1>(*x) << std::endl;
-	}
-	std::cout << std::endl << std::endl;
-}
-
-
-void recursiveKnapsack(std::vector<std::tuple<int, int>*> table) {
-
-
-
-
-	//for (auto x : table) {
-	//	weights.push_back(std::get<0>(*x));
-	//	values.push_back(std::get<1>(*x));
-	//}
-	std::vector<std::vector<int>> arr((values.size() + 0), std::vector<int>((maxWeight + 1)));
-
-	std::cout << "Dynamic: " << dynamicKnapsack(arr, values.size() - 0, maxWeight);
-
-
-
-	printMatrix(arr);
-
-	auto res = getItems(arr);
-
-	printResults(arr, res);
 
 }
 
-int bruteforceKnapsack(int i, int weight) {
-	if (i < 0 || weight == 0) {
+
+//Brute force version for the knapsack problem
+int bruteforceKnapsack(int n, int W) {
+
+	//Tree in this case refers to the imaginary decision tree
+
+	if (n < 0 || W == 0) {
 		return 0;
 	}
-	else if (weights[i] > weight) {
-		return bruteforceKnapsack(i - 1, weight);
+	//if item wont fit in our bag ...
+	else if (weights[n] > W) {
+		//Don't take the item and pursue the item to the left
+		return bruteforceKnapsack(n - 1, W);
 	}
 	else {
-		int temp1 = bruteforceKnapsack(i - 1, weight);
-		int temp2 = bruteforceKnapsack(i - 1, weight - weights[i]) + values[i];
-		int max = std::max(temp1, temp2);
-		std::cout << max << std::endl;
-		items.insert(max);
-
-		return max;
+		//try the path in the tree where we don't take the item
+		int temp1 = bruteforceKnapsack(n - 1, W);
+		//try the path in the tree where we do take the item
+		int temp2 = bruteforceKnapsack(n - 1, W - weights[n]) + values[n];
+		//Take the optimal value
+		return std::max(temp1, temp2);
 	}
+
 }
 
 
-
+//Bottom-up version for the knapsack problem 
 int dynamicKnapsack(std::vector<std::vector<int>>& arr, int n, int W) {
+
+	//Pretty much the same as our brute force approach, only this
+	//time we are using a memoization array
 
 	for (int i = 1; i < n; ++i) {
 		for (int w = 0; w <= W; ++w) {
@@ -151,20 +136,14 @@ int dynamicKnapsack(std::vector<std::vector<int>>& arr, int n, int W) {
 			}
 		}
 	}
-
+	//Return the bottom right-most item
 	return arr[n - 1][W];
-
 }
 
 
-
-
-
+//Print the memoization matrix
 void printMatrix(std::vector<std::vector<int>>& matrix) {
-
-
 	std::cout << std::endl << std::endl;
-	//std::cout << std::setw(4) << std::left << matrix.size() << std::endl;
 	for (auto i : matrix)
 	{
 		for (auto j : i) {
@@ -175,37 +154,39 @@ void printMatrix(std::vector<std::vector<int>>& matrix) {
 
 }
 
+//Returns a list of indexes for the items chosen
+//https://www.youtube.com/watch?v=qOUsP4eoYls @ 10:10 gives a good explanation on how to read the matrix
 std::vector<int> getItems(std::vector<std::vector<int>>& matrix) {
 
-	std::vector<int> solution;
+	std::vector<int> indexes;
 	int runningWeight = maxWeight;
 	int j = maxWeight;
 
-
-
+	//No need to iterate lengthwise, we have our j index to jump to the proper spot
 	for (int i = matrix.size(); i-- > 1;) {
 
-		//If the value above it is different, then add the index to the solution and exit this loop
+		//If the value above it is different, then add the index to the solution
 		if (matrix[i][j] != matrix[i - 1][j]) {
-			solution.push_back(i);
+			indexes.push_back(i);
 			runningWeight = runningWeight - weights[i];
 			j = runningWeight;
-			//break;
 		}
 	}
 
-	return solution;
+	return indexes;
 }
 
+//Print the final results
 void printResults(std::vector<std::vector<int>>& matrix, std::vector<int>& items) {
+
 	int weightTotal = 0;
 
 	std::cout << "Items:  ";
 	for (int x : items) {
-		//std::cout << "(" << std::get<0>(*table[x]) << "," << std::get<1>(*table[x]) << ") ";
 		std::cout << "(" << weights[x] << ", " << values[x] << ") ";
 		weightTotal = weightTotal + weights[x];
 	}
 	std::cout << std::endl << "Value:  " << matrix[matrix.size() - 1][maxWeight] << std::endl;
 	std::cout << "Weight: " << weightTotal << std::endl;
+
 }
