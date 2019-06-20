@@ -16,7 +16,7 @@ Large integer multiplication, where the result is too large to be stored in regu
 
 Finds the minimum spanning tree of an undirected graph, given as an adjacency matrix using [Prim's Algorithm](https://en.wikipedia.org/wiki/Prim%27s_algorithm)
 
-One thing to note, this version of Prim's is NOT using a binary heap. This is the standard O(|V|<sup>2</sup>) complexity using an adjacency matrix (which is more rare I think?). Check out the code if you're looking for help on how to implement Prim's using an adjacency matrix.
+One thing to note, this version of Prim's is NOT using a binary heap. This is the standard O(|V|<sup>2</sup>) implementation using an adjacency matrix (which is more rare I think?). Check out the code if you're looking for help on how to implement Prim's using an adjacency matrix.
 
 ### [Lab 4 - Greedy Interval Scheduling](https://github.com/TroyFernandes/CPS616-Algorithms/tree/master/Lab%204%20-%20Greedy%20Interval%20Scheduling/Lab%204%20-%20Greedy%20Interval%20Scheduling)
 
