@@ -183,6 +183,6 @@ void printResults(std::vector<std::vector<int>>& matrix, std::vector<int>& index
 		weightTotal = weightTotal + weights[x];
 	}
 	std::cout << std::endl << "Value:  " << matrix[matrix.size() - 1][maxWeight] << std::endl;
-	std::cout << "Weight: " << weightTotal << std::endl;
+	std::cout << "Weight: " << weightTotal << std::endl << std::endl << "Finished" << std::endl;
 
 }

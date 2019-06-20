@@ -38,6 +38,7 @@ int main(int argc, char** argv)
 	//Run prim's algo on the adjacency list
 	prim(x);
 
+	std::cin.ignore();
 	return 0;
 }
 
@@ -99,7 +100,7 @@ void prim(std::vector<std::vector<std::tuple<int, int>*>> list) {
 		updateMatrix(matrix, parentVertex, lowestWeightVertex, lowestVertexWeight);
 
 		updateConnectedVertices(list, table, lowestWeightVertex);
-		printTable(table);
+		//printTable(table);
 
 	}
 
@@ -220,18 +221,15 @@ void updateConnectedVertices(std::vector<std::vector<std::tuple<int, int>*>>& li
 //i.e, normally you would read 0 0 1 0 0 as "vertex 0, vertex 1, ...". Instead start reading the first line as "vertex 1, vertex 2 ..."
 void printResult(std::vector<std::vector<int>> matrix) {
 
-	std::ofstream outfile("CCPS616_Lab3_TroyFernandes.txt");
+	std::cout << std::endl << "Result Adjacency Matrix" << std::endl;
 
-	//outfile << std::endl << std::endl;
-	outfile << std::setw(4) << std::left << matrix.size() << std::endl;
 	for (auto i : matrix)
 	{
 		for (auto j : i) {
-			outfile << std::setw(4) << std::left << j;
+			std::cout << std::setw(4) << std::left << j;
 		}
-		outfile << std::endl;
+		std::cout << std::endl;
 	}
-	outfile.close();
 }
 
 //Update our resulting matrix

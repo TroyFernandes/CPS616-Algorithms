@@ -49,12 +49,10 @@ int main()
 	std::string x10 = "971699898535807985";
 	std::string y10 = "537963772279965100";
 
-	std::ofstream outfile("CCPS616_Lab2_TroyFernandes.txt");
-
 
 	for (int n = 0; n < 8; n++) {
 
-		outfile << std::endl << "k = " << x1.length() << " digits" << std::endl;
+		std::cout << std::endl << "k = " << x1.length() << " digits" << std::endl;
 
 		auto start = std::chrono::high_resolution_clock::now();
 		mult4(x1, y1);
@@ -70,7 +68,7 @@ int main()
 		auto stop = std::chrono::high_resolution_clock::now();
 		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
 
-		outfile << std::endl << "Time taken by Schoolbook Method:         " << duration.count() / 10 << " microseconds" << std::endl;
+		std::cout << std::endl << "Time taken by Schoolbook Method:         " << duration.count() / 10 << " microseconds" << std::endl;
 
 		start = std::chrono::high_resolution_clock::now();
 		mult3a(x1, y1);
@@ -85,7 +83,7 @@ int main()
 		mult3a(x10, y10);
 		stop = std::chrono::high_resolution_clock::now();
 		duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-		outfile << std::endl << "Time taken by Karatsuba Algo:            " << duration.count() / 10 << " microseconds" << std::endl;
+		std::cout << std::endl << "Time taken by Karatsuba Algo:            " << duration.count() / 10 << " microseconds" << std::endl;
 
 
 		start = std::chrono::high_resolution_clock::now();
@@ -101,7 +99,7 @@ int main()
 		mult3b(x10, y10);
 		stop = std::chrono::high_resolution_clock::now();
 		duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-		outfile << std::endl << "Time taken by Karatsuba Algo (Modified): " << duration.count() / 10 << " microseconds" << std::endl;
+		std::cout << std::endl << "Time taken by Karatsuba Algo (Modified): " << duration.count() / 10 << " microseconds" << std::endl;
 
 		//Reduce the string length by two
 		x1.erase(x1.size() - 2);
@@ -126,7 +124,7 @@ int main()
 		y10.erase(y10.size() - 2);
 	}
 
-	std::cout << "Finished writing output file" << std::endl;
+	std::cout << "Finished." << std::endl;
 
 	//Wait for keypress before exiting
 	std::cin.ignore();

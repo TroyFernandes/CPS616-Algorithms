@@ -14,11 +14,11 @@ enum SortingAlgo { MERGE = 1, SELECTION = 2, MERGSEL = 3 };
 enum N_Elements { N1 = 0, N2 = 1, N3 = 2, N4 = 3, N5 = 4 };
 
 //Size of the arrays to be sorted
-const int arr_size = 500;
-const int arr2_size = 1000;
-const int arr3_size = 5000;
-const int arr4_size = 10000;
-const int arr5_size = 50000;
+const int arr_size = 50;
+const int arr2_size = 100;
+const int arr3_size = 500;
+const int arr4_size = 1000;
+const int arr5_size = 5000;
 
 //Arrays to be sorted
 int arr[arr_size] = {};
@@ -29,7 +29,7 @@ int arr5[arr5_size] = {};
 
 //Minimum size of the sub array before being sent to selection sort
 //Add values to this vector if you want to test different subarray sizes
-std::vector<int> xVals = { 1,2,5,10,20,50,64,128,250,500,1000,2500,5000 };
+std::vector<int> xVals = { 1,2,5,10,20,50,64,128,250,500,1000 };
 
 int main()
 {
@@ -355,9 +355,8 @@ void printResults(std::vector<Results>& results) {
 	//Replace outfile with std::cout if you want results to be printed to the console
 
 
-	std::ofstream outfile("CCPS616_Lab1_TroyFernandes.txt");
 
-	outfile <<
+	std::cout <<
 		std::setw(20) << std::left << "n = "
 		<< std::setw(20) << std::left << arr_size
 		<< std::setw(20) << std::left << arr2_size
@@ -366,7 +365,7 @@ void printResults(std::vector<Results>& results) {
 		<< std::setw(20) << std::left << arr5_size << std::endl;
 
 	//Selection Sort
-	outfile
+	std::cout
 		<< std::setw(20) << std::left << results[0].algoName
 		<< std::setw(20) << std::left << results[0].results[N1]
 		<< std::setw(20) << std::left << results[0].results[N2]
@@ -375,7 +374,7 @@ void printResults(std::vector<Results>& results) {
 		<< std::setw(20) << std::left << results[0].results[N5] << std::endl;
 
 	//Merge Sort
-	outfile
+	std::cout
 		<< std::setw(20) << std::left << results[1].algoName
 		<< std::setw(20) << std::left << results[1].results[N1]
 		<< std::setw(20) << std::left << results[1].results[N2]
@@ -383,13 +382,13 @@ void printResults(std::vector<Results>& results) {
 		<< std::setw(20) << std::left << results[1].results[N4]
 		<< std::setw(20) << std::left << results[1].results[N5] << std::endl;
 
-	outfile << std::setw(20) << std::left << "MergeSel" << std::endl;
+	std::cout << std::setw(20) << std::left << "MergeSel" << std::endl;
 
 	for (std::vector<Results>::size_type i = 2; i != results.size(); i++)
 	{
 		//Merge + Selection Sort
 		std::string temp = "x=" + std::to_string(results[i].xValue);
-		outfile
+		std::cout
 			<< std::setw(20) << std::left << temp
 			<< std::setw(20) << std::left << results[i].results[N1]
 			<< std::setw(20) << std::left << results[i].results[N2]
@@ -397,8 +396,7 @@ void printResults(std::vector<Results>& results) {
 			<< std::setw(20) << std::left << results[i].results[N4]
 			<< std::setw(20) << std::left << results[i].results[N5] << std::endl;
 	}
-	outfile.close();
-	std::cout << "Finished. Created output file";
+	std::cout << "Finished.";
 }
 
 void reinitializeArray() {
