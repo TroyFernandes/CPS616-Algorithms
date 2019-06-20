@@ -36,7 +36,7 @@ int main(int argc, char** argv)
 	readFile(inputFile);
 
 	//Solve using the brute force approach (print out ksBF to see value)
-	int ksBF = bruteforceKnapsack(values.size() - 1, maxWeight);
+	//int ksBF = bruteforceKnapsack(values.size() - 1, maxWeight);
 
 	//Create our memoization array:
 	//Rows = # of values
@@ -53,11 +53,7 @@ int main(int argc, char** argv)
 	//Print out those results 
 	printResults(arr, res);
 
-
-
-	//Wait for keypress before exiting
 	std::cin.ignore();
-
 
 	return 0;
 }
@@ -177,12 +173,12 @@ std::vector<int> getItems(std::vector<std::vector<int>>& matrix) {
 }
 
 //Print the final results
-void printResults(std::vector<std::vector<int>>& matrix, std::vector<int>& items) {
+void printResults(std::vector<std::vector<int>>& matrix, std::vector<int>& indexes) {
 
 	int weightTotal = 0;
 
 	std::cout << "Items:  ";
-	for (int x : items) {
+	for (int x : indexes) {
 		std::cout << "(" << weights[x] << ", " << values[x] << ") ";
 		weightTotal = weightTotal + weights[x];
 	}

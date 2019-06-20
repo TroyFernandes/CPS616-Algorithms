@@ -28,6 +28,7 @@ int main(int argc, char** argv)
 
 	schedule(bookings);
 
+	std::cin.ignore();
 	return 0;
 }
 
@@ -121,20 +122,19 @@ void schedule(std::vector<std::tuple<int, int>*> bookings) {
 
 	}
 
-	std::ofstream outfile("CCPS616_Lab4_TroyFernandes.txt");
 
 
-	outfile << "Bookings: " << std::endl;
+	std::cout << "Bookings: " << std::endl;
 
 	for (size_t x = 0; x < rooms.size(); ++x) {
-		outfile << x + 1 << " ";
+		std::cout << x + 1 << " ";
 		for (auto x : rooms[x]) {
-			outfile << "(" << std::get<0>(*x) << ", " << std::get<1>(*x) << ") ";
+			std::cout << "(" << std::get<0>(*x) << ", " << std::get<1>(*x) << ") ";
 		}
-		outfile << std::endl;
+		std::cout << std::endl;
 	}
 	for (auto x : unavailable) {
-		outfile << "(" << std::get<0>(*x) << ", " << std::get<1>(*x) << ") ";
+		std::cout << "(" << std::get<0>(*x) << ", " << std::get<1>(*x) << ") ";
 	}
-	outfile << std::endl;
+	std::cout << std::endl;
 }
