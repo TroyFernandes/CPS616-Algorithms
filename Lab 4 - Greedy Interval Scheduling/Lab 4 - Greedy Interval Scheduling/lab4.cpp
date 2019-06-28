@@ -82,14 +82,14 @@ bool sortbySec(const std::tuple<int, int> *a, const std::tuple<int, int> *b) {
 
 bool canAccommodate(std::vector<std::tuple<int, int>*>& room, const std::tuple<int, int> *toBook) {
 
-	//If there's no prevous booking, then the room can accomodate a booking
-	if ((int)(room.size()) - 1 < 0) {
+	//If the room's empty, then the room can accomodate a booking
+	if (room.empty()) {
 		return true;
 	}
 
 	return(
 		//Return true if the pending booking ends after (or right when) the previous booking ends
-		(std::get<0>(*toBook) >= std::get<1>(*(room[room.size() - 1])))
+		(std::get<0>(*toBook) >= std::get<1>(*(room.back())))
 		);
 
 }
